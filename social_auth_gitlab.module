@@ -1,0 +1,27 @@
+<?php
+
+/**
+ * @file
+ * Hook implementations for Social Auth Gitlab module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function social_auth_gitlab_help($route_name, RouteMatchInterface $route_match) {
+  $output = '';
+
+  switch ($route_name) {
+    case 'simple_gitlab_connect.settings_form':
+      $output = '<h3>' . t('Configuration instructions') . '</h3>';
+      $output .= '<p>';
+      $output .= t('Configuration instructions and other useful documentation can be found from <a href="@handbook-url">Social Auth Gitlab Handbook</a>.', ['@handbook-url' => 'https://www.drupal.org/node/2764227']);
+      $output .= '</p>';
+      break;
+
+  }
+
+  return $output;
+}

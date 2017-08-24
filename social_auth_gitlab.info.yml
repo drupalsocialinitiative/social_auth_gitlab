@@ -1,0 +1,8 @@
+name: Social Auth Gitlab
+type: module
+description: 'Social Auth integration for Gitlab.'
+package: Social
+core: 8.x
+configure: social_auth_gitlab.settings_form
+dependencies:
+  - social_auth

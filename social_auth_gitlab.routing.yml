@@ -1,0 +1,25 @@
+social_auth_gitlab.redirect_to_gitlab:
+  path: 'user/login/gitlab'
+  defaults:
+    _controller: '\Drupal\social_auth_gitlab\Controller\GitlabAuthController::redirectToGitlab'
+  requirements:
+    _role: 'anonymous'
+  options:
+    no_cache: TRUE
+
+social_auth_gitlab.callback:
+  path: 'user/login/gitlab/callback'
+  defaults:
+    _controller: '\Drupal\social_auth_gitlab\Controller\GitlabAuthController::callback'
+  requirements:
+    _role: 'anonymous'
+  options:
+    no_cache: TRUE
+
+social_auth_gitlab.settings_form:
+  path: 'admin/config/social-api/social-auth/gitlab'
+  defaults:
+    _title: 'Social Auth Gitlab settings'
+    _form: '\Drupal\social_auth_gitlab\Form\GitlabAuthSettingsForm'
+  requirements:
+    _permission: 'administer social api authentication'

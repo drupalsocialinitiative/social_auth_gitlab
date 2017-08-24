@@ -1,0 +1,26 @@
+{
+    "name": "drupal/social_auth_gitlab",
+    "type": "drupal-module",
+    "description": "Social Auth integration for Gitlab.",
+    "keywords": ["Drupal"],
+    "license": "GPL-2.0+",
+    "homepage": "https://www.drupal.org/project/social_auth_gitlab",
+    "minimum-stability": "dev",
+    "support": {
+        "issues": "https://www.drupal.org/project/issues/social_auth_gitlab",
+        "source": "http://cgit.drupalcode.org/social_auth_gitlab"
+    },
+    "require": {
+        "omines/oauth2-gitlab": "^2.0"
+    },
+    "authors": [
+        {
+            "name": "Getulio Valentin Sánchez (gvso)",
+            "email": "valentin2507@gmail.com"
+        },
+        {
+            "name": "Himanshu Dixit (himanshu-dixit)",
+            "email": "hudixt@gmail.com"
+        }
+    ]
+}
