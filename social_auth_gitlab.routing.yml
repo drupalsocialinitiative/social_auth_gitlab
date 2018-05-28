@@ -3,7 +3,8 @@ social_auth_gitlab.redirect_to_gitlab:
   defaults:
     _controller: '\Drupal\social_auth_gitlab\Controller\GitlabAuthController::redirectToGitlab'
   requirements:
-    _role: 'anonymous'
+    # Anonymous users can log in, but authenticated users can also associate a new provider.
+    _access: 'TRUE'
   options:
     no_cache: TRUE
 
@@ -12,7 +13,8 @@ social_auth_gitlab.callback:
   defaults:
     _controller: '\Drupal\social_auth_gitlab\Controller\GitlabAuthController::callback'
   requirements:
-    _role: 'anonymous'
+    # Anonymous users can log in, but authenticated users can also associate a new provider.
+    _access: 'TRUE'
   options:
     no_cache: TRUE
 

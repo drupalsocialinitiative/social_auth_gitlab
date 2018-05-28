@@ -11,7 +11,7 @@ use Drupal\social_api\Plugin\NetworkBase;
 use Drupal\social_api\SocialApiException;
 use Drupal\social_auth_gitlab\Settings\GitlabAuthSettings;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use League\OAuth2\Client\Provider\Gitlab;
+use Omines\OAuth2\Client\Provider\Gitlab;
 use Drupal\Core\Site\Settings;
 
 /**
@@ -66,7 +66,7 @@ class GitlabAuth extends NetworkBase implements GitlabAuthInterface {
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
-      $container->get('social_auth.social_auth_data_handler'),
+      $container->get('social_auth.data_handler'),
       $configuration,
       $plugin_id,
       $plugin_definition,
@@ -122,7 +122,7 @@ class GitlabAuth extends NetworkBase implements GitlabAuthInterface {
   /**
    * Sets the underlying SDK library.
    *
-   * @return \League\OAuth2\Client\Provider\Gitlab
+   * @return \Omines\OAuth2\Client\Provider\Gitlab
    *   The initialized 3rd party library instance.
    *
    * @throws SocialApiException
@@ -136,27 +136,22 @@ class GitlabAuth extends NetworkBase implements GitlabAuthInterface {
     }
     /* @var \Drupal\social_auth_gitlab\Settings\GitlabAuthSettings $settings */
     $settings = $this->settings;
-    // Proxy configuration data for outward proxy.
-    $proxyUrl = $this->siteSettings->get("http_client_config")["proxy"]["http"];
+
     if ($this->validateConfig($settings)) {
       // All these settings are mandatory.
+      $league_settings = [
+        'clientId' => $settings->getClientId(),
+        'clientSecret' => $settings->getClientSecret(),
+        'redirectUri' => $this->requestContext->getCompleteBaseUrl() . '/user/login/gitlab/callback',
+      ];
+
+      // Proxy configuration data for outward proxy.
+      $proxyUrl = $this->siteSettings->get('http_client_config')['proxy']['http'];
       if ($proxyUrl) {
-        $league_settings = [
-          'clientId' => $settings->getClientId(),
-          'clientSecret' => $settings->getClientSecret(),
-          'redirectUri' => $this->requestContext->getCompleteBaseUrl() . '/user/login/gitlab/callback',
-          'proxy' => $proxyUrl,
-        ];
-      }
-      else {
-        $league_settings = [
-          'clientId' => $settings->getClientId(),
-          'clientSecret' => $settings->getClientSecret(),
-          'redirectUri' => $this->requestContext->getCompleteBaseUrl() . '/user/login/gitlab/callback',
-        ];
+        $league_settings['proxy'] = $proxyUrl;
       }
 
-      return new \Omines\OAuth2\Client\Provider\Gitlab($league_settings);
+      return new Gitlab($league_settings);
     }
     return FALSE;
   }

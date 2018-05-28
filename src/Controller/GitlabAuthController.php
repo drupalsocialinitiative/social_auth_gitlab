@@ -22,35 +22,35 @@ class GitlabAuthController extends ControllerBase {
    *
    * @var \Drupal\social_api\Plugin\NetworkManager
    */
-  private $networkManager;
+  protected $networkManager;
 
   /**
    * The user manager.
    *
    * @var \Drupal\social_auth\SocialAuthUserManager
    */
-  private $userManager;
+  protected $userManager;
 
   /**
    * The gitlab authentication manager.
    *
    * @var \Drupal\social_auth_gitlab\GitlabAuthManager
    */
-  private $gitlabManager;
+  protected $gitlabManager;
 
   /**
    * Used to access GET parameters.
    *
    * @var \Symfony\Component\HttpFoundation\RequestStack
    */
-  private $request;
+  protected $request;
 
   /**
    * The Social Auth Data Handler.
    *
    * @var \Drupal\social_auth\SocialAuthDataHandler
    */
-  private $dataHandler;
+  protected $dataHandler;
 
 
   /**
@@ -76,7 +76,12 @@ class GitlabAuthController extends ControllerBase {
    * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
    *   Used for logging errors.
    */
-  public function __construct(NetworkManager $network_manager, SocialAuthUserManager $user_manager, GitlabAuthManager $gitlab_manager, RequestStack $request, SocialAuthDataHandler $social_auth_data_handler, LoggerChannelFactoryInterface $logger_factory) {
+  public function __construct(NetworkManager $network_manager,
+                              SocialAuthUserManager $user_manager,
+                              GitlabAuthManager $gitlab_manager,
+                              RequestStack $request,
+                              SocialAuthDataHandler $social_auth_data_handler,
+                              LoggerChannelFactoryInterface $logger_factory) {
 
     $this->networkManager = $network_manager;
     $this->userManager = $user_manager;
@@ -102,7 +107,7 @@ class GitlabAuthController extends ControllerBase {
       $container->get('social_auth.user_manager'),
       $container->get('social_auth_gitlab.manager'),
       $container->get('request_stack'),
-      $container->get('social_auth.social_auth_data_handler'),
+      $container->get('social_auth.data_handler'),
       $container->get('logger.factory')
     );
   }
@@ -113,7 +118,7 @@ class GitlabAuthController extends ControllerBase {
    * Redirects the user to Gitlab for authentication.
    */
   public function redirectToGitlab() {
-    /* @var \League\OAuth2\Client\Provider\Gitlab false $gitlab */
+    /* @var \Omines\OAuth2\Client\Provider\Gitlab|false $gitlab */
     $gitlab = $this->networkManager->createInstance('social_auth_gitlab')->getSdk();
 
     // If gitlab client could not be obtained.
@@ -125,10 +130,8 @@ class GitlabAuthController extends ControllerBase {
     // Gitlab service was returned, inject it to $gitlabManager.
     $this->gitlabManager->setClient($gitlab);
 
-    // Generates the URL where the user will be redirected for Gitlab login.
-    // If the user did not have email permission granted on previous attempt,
-    // we use the re-request URL requesting only the email address.
-    $gitlab_login_url = $this->gitlabManager->getGitlabLoginUrl();
+    // Generates the URL where the user will be redirected for authorization.
+    $gitlab_login_url = $this->gitlabManager->getAuthorizationUrl();
 
     $state = $this->gitlabManager->getState();
 
@@ -150,7 +153,7 @@ class GitlabAuthController extends ControllerBase {
       return $this->redirect('user.login');
     }
 
-    /* @var \League\OAuth2\Client\Provider\Gitlab false $gitlab */
+    /* @var \Omines\OAuth2\Client\Provider\Gitlab|false $gitlab */
     $gitlab = $this->networkManager->createInstance('social_auth_gitlab')->getSdk();
 
     // If Gitlab client could not be obtained.
@@ -161,7 +164,7 @@ class GitlabAuthController extends ControllerBase {
 
     $state = $this->dataHandler->get('oauth2state');
 
-    // Retreives $_GET['state'].
+    // Retrieves $_GET['state'].
     $retrievedState = $this->request->getCurrentRequest()->query->get('state');
     if (empty($retrievedState) || ($retrievedState !== $state)) {
       $this->userManager->nullifySessionKeys();
@@ -175,26 +178,17 @@ class GitlabAuthController extends ControllerBase {
     $this->gitlabManager->setClient($gitlab)->authenticate();
 
     // Gets user's info from Gitlab API.
-    if (!$gitlab_profile = $this->gitlabManager->getUserInfo()) {
+    /* @var \Omines\OAuth2\Client\Provider\GitlabResourceOwner $profile */
+    if (!$profile = $this->gitlabManager->getUserInfo()) {
       drupal_set_message($this->t('Gitlab login failed, could not load Gitlab profile. Contact site administrator.'), 'error');
       return $this->redirect('user.login');
     }
 
-    // Store the data mapped with data points define is
-    // social_auth_github settings.
-    $data = [];
-    if (!$this->userManager->checkIfUserExists($gitlab_profile->getId())) {
-      $api_calls = explode(PHP_EOL, $this->gitlabManager->getAPICalls());
-
-      // Iterate through api calls define in settings and try to retrieve them.
-      foreach ($api_calls as $api_call) {
-        $call = $this->gitlabManager->getExtraDetails($api_call);
-        array_push($data, $call);
-      }
-    }
+    // Gets (or not) extra initial data.
+    $data = $this->userManager->checkIfUserExists($profile->getId()) ? NULL : $this->gitlabManager->getExtraDetails();
 
     // If user information could be retrieved.
-    return $this->userManager->authenticateUser($gitlab_profile->getName(), $gitlab_profile->getEmail(),$github_profile->getId(), $this->gitlabManager->getAccessToken(), $gitlab_profile->getAvatarUrl(), json_encode($data));
+    return $this->userManager->authenticateUser($profile->getName(), $profile->getEmail(), $profile->getId(), $this->gitlabManager->getAccessToken(), $profile->getAvatarUrl(), $data);
   }
 
 }
