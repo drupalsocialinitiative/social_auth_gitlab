@@ -11,9 +11,9 @@ use Drupal\social_auth\Form\SocialAuthSettingsForm;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Settings form for Social Auth Gitlab.
+ * Settings form for Social Auth GitLab.
  */
-class GitlabAuthSettingsForm extends SocialAuthSettingsForm {
+class GitLabAuthSettingsForm extends SocialAuthSettingsForm {
 
   /**
    * The request context.
@@ -78,9 +78,9 @@ class GitlabAuthSettingsForm extends SocialAuthSettingsForm {
 
     $form['gitlab_settings'] = [
       '#type' => 'details',
-      '#title' => $this->t('Gitlab Client settings'),
+      '#title' => $this->t('GitLab Client settings'),
       '#open' => TRUE,
-      '#description' => $this->t('You need to first create a Gitlab App at <a href="@gitlab-dev">@gitlab-dev</a>', ['@gitlab-dev' => 'https://gitlab.com/profile/applications']),
+      '#description' => $this->t('You need to first create a GitLab App at <a href="@gitlab-dev">@gitlab-dev</a>', ['@gitlab-dev' => 'https://gitlab.com/profile/applications']),
     ];
 
     $form['gitlab_settings']['client_id'] = [
@@ -103,16 +103,8 @@ class GitlabAuthSettingsForm extends SocialAuthSettingsForm {
       '#type' => 'textfield',
       '#disabled' => TRUE,
       '#title' => $this->t('Callback url'),
-      '#description' => $this->t('Copy this value to <em>Callback url</em> field of your Gitlab App settings.'),
+      '#description' => $this->t('Copy this value to <em>Callback URL</em> field of your GitLab App settings.'),
       '#default_value' => $GLOBALS['base_url'] . '/user/login/gitlab/callback',
-    ];
-
-    $form['gitlab_settings']['authorized_javascript_origin'] = [
-      '#type' => 'textfield',
-      '#disabled' => TRUE,
-      '#title' => $this->t('Authorized Javascript Origin'),
-      '#description' => $this->t('Copy this value to <em>Authorized Javascript Origins</em> field of your Gitlab App settings.'),
-      '#default_value' => $this->requestContext->getHost(),
     ];
 
     $form['gitlab_settings']['advanced'] = [
@@ -125,7 +117,7 @@ class GitlabAuthSettingsForm extends SocialAuthSettingsForm {
       '#type' => 'textarea',
       '#title' => $this->t('API calls to be made to collect data'),
       '#default_value' => $config->get('endpoints'),
-      '#description' => $this->t('Define the endpoints to be requested when user authenticates with Gitlab for the first time<br>
+      '#description' => $this->t('Define the endpoints to be requested when user authenticates with GitLab for the first time<br>
                                   Enter each endpoint in different lines in the format <em>endpoint</em>|<em>name_of_endpoint</em>.<br>
                                   <b>For instance:</b><br>
                                   /v4/user/keys|user_keys'),

@@ -9,29 +9,29 @@ use Drupal\Core\Routing\RequestContext;
 use Drupal\social_auth\SocialAuthDataHandler;
 use Drupal\social_api\Plugin\NetworkBase;
 use Drupal\social_api\SocialApiException;
-use Drupal\social_auth_gitlab\Settings\GitlabAuthSettings;
+use Drupal\social_auth_gitlab\Settings\GitLabAuthSettings;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Omines\OAuth2\Client\Provider\Gitlab;
 use Drupal\Core\Site\Settings;
 
 /**
- * Defines a Network Plugin for Social Auth Gitlab.
+ * Defines a Network Plugin for Social Auth GitLab.
  *
  * @package Drupal\simple_gitlab_connect\Plugin\Network
  *
  * @Network(
  *   id = "social_auth_gitlab",
- *   social_network = "Gitlab",
+ *   social_network = "GitLab",
  *   type = "social_auth",
  *   handlers = {
  *     "settings": {
- *       "class": "\Drupal\social_auth_gitlab\Settings\GitlabAuthSettings",
+ *       "class": "\Drupal\social_auth_gitlab\Settings\GitLabAuthSettings",
  *       "config_id": "social_auth_gitlab.settings"
  *     }
  *   }
  * )
  */
-class GitlabAuth extends NetworkBase implements GitlabAuthInterface {
+class GitLabAuth extends NetworkBase implements GitLabAuthInterface {
 
   /**
    * The Social Auth Data Handler.
@@ -79,7 +79,7 @@ class GitlabAuth extends NetworkBase implements GitlabAuthInterface {
   }
 
   /**
-   * GitlabAuth constructor.
+   * GitLabAuth constructor.
    *
    * @param \Drupal\social_auth\SocialAuthDataHandler $data_handler
    *   The data handler.
@@ -132,7 +132,7 @@ class GitlabAuth extends NetworkBase implements GitlabAuthInterface {
 
     $class_name = 'Omines\OAuth2\Client\Provider\Gitlab';
     if (!class_exists($class_name)) {
-      throw new SocialApiException(sprintf('The Gitlab Library for the league oAuth not found. Class: %s.', $class_name));
+      throw new SocialApiException(sprintf('The GitLab library for PHP League OAuth2 not found. Class: %s.', $class_name));
     }
     /* @var \Drupal\social_auth_gitlab\Settings\GitlabAuthSettings $settings */
     $settings = $this->settings;
@@ -159,14 +159,14 @@ class GitlabAuth extends NetworkBase implements GitlabAuthInterface {
   /**
    * Checks that module is configured.
    *
-   * @param \Drupal\social_auth_gitlab\Settings\GitlabAuthSettings $settings
-   *   The Gitlab auth settings.
+   * @param \Drupal\social_auth_gitlab\Settings\GitLabAuthSettings $settings
+   *   The GitLab auth settings.
    *
    * @return bool
    *   True if module is configured.
    *   False otherwise.
    */
-  protected function validateConfig(GitlabAuthSettings $settings) {
+  protected function validateConfig(GitLabAuthSettings $settings) {
     $client_id = $settings->getClientId();
     $client_secret = $settings->getClientSecret();
     if (!$client_id || !$client_secret) {

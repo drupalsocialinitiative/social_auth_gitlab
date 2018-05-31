@@ -6,16 +6,16 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\social_api\Plugin\NetworkManager;
 use Drupal\social_auth\SocialAuthDataHandler;
 use Drupal\social_auth\SocialAuthUserManager;
-use Drupal\social_auth_gitlab\GitlabAuthManager;
+use Drupal\social_auth_gitlab\GitLabAuthManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Routing\TrustedRedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 
 /**
- * Returns responses for Simple Gitlab Connect module routes.
+ * Returns responses for Social Auth GitLab routes.
  */
-class GitlabAuthController extends ControllerBase {
+class GitLabAuthController extends ControllerBase {
 
   /**
    * The network plugin manager.
@@ -32,11 +32,11 @@ class GitlabAuthController extends ControllerBase {
   protected $userManager;
 
   /**
-   * The gitlab authentication manager.
+   * The GitLab authentication manager.
    *
-   * @var \Drupal\social_auth_gitlab\GitlabAuthManager
+   * @var \Drupal\social_auth_gitlab\GitLabAuthManager
    */
-  protected $gitlabManager;
+  protected $gitLabManager;
 
   /**
    * Used to access GET parameters.
@@ -61,13 +61,13 @@ class GitlabAuthController extends ControllerBase {
   protected $loggerFactory;
 
   /**
-   * GitlabAuthController constructor.
+   * GitLabAuthController constructor.
    *
    * @param \Drupal\social_api\Plugin\NetworkManager $network_manager
    *   Used to get an instance of social_auth_gitlab network plugin.
    * @param \Drupal\social_auth\SocialAuthUserManager $user_manager
    *   Manages user login/registration.
-   * @param \Drupal\social_auth_gitlab\GitlabAuthManager $gitlab_manager
+   * @param \Drupal\social_auth_gitlab\GitLabAuthManager $gitlab_manager
    *   Used to manage authentication methods.
    * @param \Symfony\Component\HttpFoundation\RequestStack $request
    *   Used to access GET parameters.
@@ -78,14 +78,14 @@ class GitlabAuthController extends ControllerBase {
    */
   public function __construct(NetworkManager $network_manager,
                               SocialAuthUserManager $user_manager,
-                              GitlabAuthManager $gitlab_manager,
+                              GitLabAuthManager $gitlab_manager,
                               RequestStack $request,
                               SocialAuthDataHandler $social_auth_data_handler,
                               LoggerChannelFactoryInterface $logger_factory) {
 
     $this->networkManager = $network_manager;
     $this->userManager = $user_manager;
-    $this->gitlabManager = $gitlab_manager;
+    $this->gitLabManager = $gitlab_manager;
     $this->request = $request;
     $this->dataHandler = $social_auth_data_handler;
     $this->loggerFactory = $logger_factory;
@@ -115,38 +115,38 @@ class GitlabAuthController extends ControllerBase {
   /**
    * Response for path 'user/login/gitlab'.
    *
-   * Redirects the user to Gitlab for authentication.
+   * Redirects the user to GitLab for authentication.
    */
-  public function redirectToGitlab() {
-    /* @var \Omines\OAuth2\Client\Provider\Gitlab|false $gitlab */
-    $gitlab = $this->networkManager->createInstance('social_auth_gitlab')->getSdk();
+  public function redirectToGitLab() {
+    /* @var \Omines\OAuth2\Client\Provider\Gitlab|false $gitLab */
+    $gitLab = $this->networkManager->createInstance('social_auth_gitlab')->getSdk();
 
-    // If gitlab client could not be obtained.
-    if (!$gitlab) {
-      drupal_set_message($this->t('Social Auth Gitlab not configured properly. Contact site administrator.'), 'error');
+    // If GitLab client could not be obtained.
+    if (!$gitLab) {
+      drupal_set_message($this->t('Social Auth GitLab not configured properly. Contact site administrator.'), 'error');
       return $this->redirect('user.login');
     }
 
-    // Gitlab service was returned, inject it to $gitlabManager.
-    $this->gitlabManager->setClient($gitlab);
+    // GitLab service was returned, inject it to $gitLabManager.
+    $this->gitLabManager->setClient($gitLab);
 
     // Generates the URL where the user will be redirected for authorization.
-    $gitlab_login_url = $this->gitlabManager->getAuthorizationUrl();
+    $auth_url = $this->gitLabManager->getAuthorizationUrl();
 
-    $state = $this->gitlabManager->getState();
+    $state = $this->gitLabManager->getState();
 
     $this->dataHandler->set('oauth2state', $state);
 
-    return new TrustedRedirectResponse($gitlab_login_url);
+    return new TrustedRedirectResponse($auth_url);
   }
 
   /**
    * Response for path 'user/login/gitlab/callback'.
    *
-   * Gitlab returns the user here after user has authenticated in Gitlab.
+   * GitLab returns the user here after user has authenticated in GitLab.
    */
   public function callback() {
-    // Checks if user cancel login via Gitlab.
+    // Checks if user cancel authentication via GitLab.
     $error = $this->request->getCurrentRequest()->get('error');
     if ($error == 'access_denied') {
       drupal_set_message($this->t('You could not be authenticated.'), 'error');
@@ -154,11 +154,11 @@ class GitlabAuthController extends ControllerBase {
     }
 
     /* @var \Omines\OAuth2\Client\Provider\Gitlab|false $gitlab */
-    $gitlab = $this->networkManager->createInstance('social_auth_gitlab')->getSdk();
+    $gitLab = $this->networkManager->createInstance('social_auth_gitlab')->getSdk();
 
-    // If Gitlab client could not be obtained.
-    if (!$gitlab) {
-      drupal_set_message($this->t('Social Auth Gitlab not configured properly. Contact site administrator.'), 'error');
+    // If GitLab client could not be obtained.
+    if (!$gitLab) {
+      drupal_set_message($this->t('Social Auth GitLab not configured properly. Contact site administrator.'), 'error');
       return $this->redirect('user.login');
     }
 
@@ -168,27 +168,27 @@ class GitlabAuthController extends ControllerBase {
     $retrievedState = $this->request->getCurrentRequest()->query->get('state');
     if (empty($retrievedState) || ($retrievedState !== $state)) {
       $this->userManager->nullifySessionKeys();
-      drupal_set_message($this->t('Gitlab login failed. Unvalid oAuth2 State.'), 'error');
+      drupal_set_message($this->t('GitLab login failed. Invalid OAuth2 State.'), 'error');
       return $this->redirect('user.login');
     }
 
     // Saves access token to session.
-    $this->dataHandler->set('access_token', $this->gitlabManager->getAccessToken());
+    $this->dataHandler->set('access_token', $this->gitLabManager->getAccessToken());
 
-    $this->gitlabManager->setClient($gitlab)->authenticate();
+    $this->gitLabManager->setClient($gitLab)->authenticate();
 
-    // Gets user's info from Gitlab API.
+    // Gets user's info from GitLab API.
     /* @var \Omines\OAuth2\Client\Provider\GitlabResourceOwner $profile */
-    if (!$profile = $this->gitlabManager->getUserInfo()) {
-      drupal_set_message($this->t('Gitlab login failed, could not load Gitlab profile. Contact site administrator.'), 'error');
+    if (!$profile = $this->gitLabManager->getUserInfo()) {
+      drupal_set_message($this->t('GitLab login failed, could not load GitLab profile. Contact site administrator.'), 'error');
       return $this->redirect('user.login');
     }
 
     // Gets (or not) extra initial data.
-    $data = $this->userManager->checkIfUserExists($profile->getId()) ? NULL : $this->gitlabManager->getExtraDetails();
+    $data = $this->userManager->checkIfUserExists($profile->getId()) ? NULL : $this->gitLabManager->getExtraDetails();
 
     // If user information could be retrieved.
-    return $this->userManager->authenticateUser($profile->getName(), $profile->getEmail(), $profile->getId(), $this->gitlabManager->getAccessToken(), $profile->getAvatarUrl(), $data);
+    return $this->userManager->authenticateUser($profile->getName(), $profile->getEmail(), $profile->getId(), $this->gitLabManager->getAccessToken(), $profile->getAvatarUrl(), $data);
   }
 
 }

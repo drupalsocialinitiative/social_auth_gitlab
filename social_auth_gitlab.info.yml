@@ -1,6 +1,6 @@
-name: Social Auth Gitlab
+name: Social Auth GitLab
 type: module
-description: 'Social Auth integration for Gitlab.'
+description: 'Social Auth integration for GitLab.'
 package: Social
 core: 8.x
 configure: social_auth_gitlab.settings_form

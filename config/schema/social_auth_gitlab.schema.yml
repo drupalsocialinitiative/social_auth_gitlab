@@ -1,6 +1,6 @@
 social_auth_gitlab.settings:
   type: config_object
-  label: 'Social Auth Gitlab settings'
+  label: 'Social Auth GitLab settings'
   mapping:
     client_id:
       type: string
@@ -8,3 +8,6 @@ social_auth_gitlab.settings:
     client_secret:
       type: string
       label: 'Client Secret'
+    endpoints:
+      type: string
+      label: 'API Endpoints to be requested'

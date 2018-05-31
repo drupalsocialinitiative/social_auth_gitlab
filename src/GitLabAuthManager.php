@@ -6,9 +6,9 @@ use Drupal\social_auth\AuthManager\OAuth2Manager;
 use Drupal\Core\Config\ConfigFactory;
 
 /**
- * Contains all the logic for Gitlab login integration.
+ * Contains all the logic for GitLab login integration.
  */
-class GitlabAuthManager extends OAuth2Manager {
+class GitLabAuthManager extends OAuth2Manager {
 
   /**
    * Constructor.
@@ -37,13 +37,13 @@ class GitlabAuthManager extends OAuth2Manager {
   }
 
   /**
-   * Returns the Gitlab login URL where user will be redirected.
+   * Returns the GitLab login URL where user will be redirected.
    *
    * @TODO: We should allow extra scopes after GitLab fixes this issue:
    * @see https://gitlab.com/gitlab-org/gitlab-ce/issues/36203
    *
    * @return string
-   *   Absolute Gitlab login URL where user will be redirected
+   *   Absolute GitLab login URL where user will be redirected
    */
   public function getAuthorizationUrl() {
     $scopes = ['api'];
@@ -68,10 +68,10 @@ class GitlabAuthManager extends OAuth2Manager {
   }
 
   /**
-   * Returns the Gitlab login URL where user will be redirected.
+   * Returns the GitLab login URL where user will be redirected.
    *
    * @return string
-   *   Absolute Gitlab login URL where user will be redirected
+   *   Absolute GitLab login URL where user will be redirected
    */
   public function getState() {
     $state = $this->client->getState();

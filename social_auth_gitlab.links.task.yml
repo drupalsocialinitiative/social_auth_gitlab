@@ -1,4 +1,4 @@
 social_auth_gitlab.settings.tab:
-  title: 'Gitlab'
+  title: 'GitLab'
   route_name: social_auth_gitlab.settings_form
   base_route: social_auth.integrations

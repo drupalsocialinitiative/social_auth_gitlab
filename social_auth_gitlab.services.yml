@@ -1,5 +1,5 @@
 services:
   social_auth_gitlab.manager:
-    class: Drupal\social_auth_gitlab\GitlabAuthManager
+    class: Drupal\social_auth_gitlab\GitLabAuthManager
     arguments:
       - '@config.factory'

@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Install, update, and uninstall functions for the Social Auth Gitlab module.
+ * Install, update, and uninstall functions for Social Auth GitLab.
  */
 
 use Drupal\social_api\Utility\SocialApiImplementerInstaller;
@@ -11,9 +11,8 @@ use Drupal\social_auth\Controller\SocialAuthController;
 /**
  * Implements hook_requirements().
  *
- * Checks that a compatible version of oAuth2 Gitlab library for the
- * league OAuth2 client with Composer. Check installation instructions
- * from the README.txt.
+ * Checks that a compatible version of PHP League OAuth2 GitLab library is
+ * available. Check installation instructions from the README.txt.
  */
 function social_auth_gitlab_requirements($phase) {
 
@@ -23,7 +22,7 @@ function social_auth_gitlab_requirements($phase) {
   \Drupal::service('module_installer')->install(['social_api']);
 
   if ($phase == 'install') {
-    $requirements = SocialApiImplementerInstaller::checkLibrary('social_auth_gitlab', 'Social Auth Gitlab', 'omines/oauth2-gitlab', 2.0, 3.0);
+    $requirements = SocialApiImplementerInstaller::checkLibrary('social_auth_gitlab', 'Social Auth GitLab', 'omines/oauth2-gitlab', 3.0, 4.0);
   }
 
   return $requirements;

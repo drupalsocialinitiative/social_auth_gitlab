@@ -13,7 +13,7 @@ CONTENTS OF THIS FILE
 INTRODUCTION
 ------------
 
-Social Auth Gitlab Module is a Gitlab Authentication integration for Drupal.
+Social Auth GitLab is a GitLab authentication integration for Drupal.
 
 
 REQUIREMENTS
@@ -29,7 +29,7 @@ INSTALLATION
 ------------
 
  * Run composer to install dependencies:
-   composer require "drupal/social_auth_gitlab"
+   composer require "drupal/social_auth_gitlab:^2.0"
 
  * Install the dependencies: Social API and Social Auth.
 
@@ -41,10 +41,10 @@ INSTALLATION
 CONFIGURATION
 -------------
 
- * Add your Gitlab project OAuth information in
-   Configuration » User Authentication » Gitlab.
+ * Add your GitLab project OAuth2 information in
+   Configuration » User Authentication » GitLab.
 
- * Place a Social Auth Gitlab block in Structure » Block Layout.
+ * Place a Social Auth Login block in Structure » Block Layout.
 
  * If you already have a Social Auth Login block in the site, rebuild the
    cache.
@@ -53,15 +53,15 @@ CONFIGURATION
 HOW IT WORKS
 ------------
 
-User can click on the Gitlab logo in the Social Auth Login block.
+User can click on the GitLab logo in the Social Auth Login block.
 You can also add a button or link anywhere on the site that points
 to /user/login/gitlab, so theming and customizing the button or link
 is very flexible.
 
 When the user opens the /user/login/gitlab link, it automatically takes
-user to Gitlab for authentication. Gitlab then returns the user to Drupal site.
+user to GitLab for authentication. GitLab then returns the user to Drupal site.
 If we have an existing Drupal user with the same email address provided by
-Gitlab, that user is logged in. Otherwise, a new Drupal user is
+GitLab, that user is logged in. Otherwise, a new Drupal user is
 created.
 
 

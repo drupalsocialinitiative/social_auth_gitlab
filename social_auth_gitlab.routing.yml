@@ -1,7 +1,7 @@
 social_auth_gitlab.redirect_to_gitlab:
   path: 'user/login/gitlab'
   defaults:
-    _controller: '\Drupal\social_auth_gitlab\Controller\GitlabAuthController::redirectToGitlab'
+    _controller: '\Drupal\social_auth_gitlab\Controller\GitLabAuthController::redirectToGitLab'
   requirements:
     # Anonymous users can log in, but authenticated users can also associate a new provider.
     _access: 'TRUE'
@@ -11,7 +11,7 @@ social_auth_gitlab.redirect_to_gitlab:
 social_auth_gitlab.callback:
   path: 'user/login/gitlab/callback'
   defaults:
-    _controller: '\Drupal\social_auth_gitlab\Controller\GitlabAuthController::callback'
+    _controller: '\Drupal\social_auth_gitlab\Controller\GitLabAuthController::callback'
   requirements:
     # Anonymous users can log in, but authenticated users can also associate a new provider.
     _access: 'TRUE'
@@ -21,7 +21,7 @@ social_auth_gitlab.callback:
 social_auth_gitlab.settings_form:
   path: 'admin/config/social-api/social-auth/gitlab'
   defaults:
-    _title: 'Social Auth Gitlab settings'
-    _form: '\Drupal\social_auth_gitlab\Form\GitlabAuthSettingsForm'
+    _title: 'Social Auth GitLab settings'
+    _form: '\Drupal\social_auth_gitlab\Form\GitLabAuthSettingsForm'
   requirements:
     _permission: 'administer social api authentication'
