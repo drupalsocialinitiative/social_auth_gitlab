@@ -1,7 +1,7 @@
 social_auth_gitlab.redirect_to_gitlab:
   path: 'user/login/gitlab'
   defaults:
-    _controller: '\Drupal\social_auth_gitlab\Controller\GitLabAuthController::redirectToGitLab'
+    _controller: '\Drupal\social_auth_gitlab\Controller\GitLabAuthController::redirectToProvider'
   requirements:
     # Anonymous users can log in, but authenticated users can also associate a new provider.
     _access: 'TRUE'
