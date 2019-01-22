@@ -30,7 +30,7 @@ class GitLabAuthController extends OAuth2ControllerBase {
    * @param \Symfony\Component\HttpFoundation\RequestStack $request
    *   Used to access GET parameters.
    * @param \Drupal\social_auth\SocialAuthDataHandler $data_handler
-   *   SocialAuthDataHandler object.
+   *   The Social Auth data handler.
    */
   public function __construct(MessengerInterface $messenger,
                               NetworkManager $network_manager,

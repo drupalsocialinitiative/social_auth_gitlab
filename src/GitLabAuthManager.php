@@ -2,11 +2,13 @@
 
 namespace Drupal\social_auth_gitlab;
 
-use Drupal\social_auth\AuthManager\OAuth2Manager;
 use Drupal\Core\Config\ConfigFactory;
+use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Drupal\social_auth\AuthManager\OAuth2Manager;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 
 /**
- * Contains all the logic for GitLab login integration.
+ * Contains all the logic for GitLab OAuth2 authentication.
  */
 class GitLabAuthManager extends OAuth2Manager {
 
@@ -15,24 +17,35 @@ class GitLabAuthManager extends OAuth2Manager {
    *
    * @param \Drupal\Core\Config\ConfigFactory $configFactory
    *   Used for accessing configuration object factory.
+   * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
+   *   The logger factory.
    */
-  public function __construct(ConfigFactory $configFactory) {
-    parent::__construct($configFactory->get('social_auth_gitlab.settings'));
+  public function __construct(ConfigFactory $configFactory, LoggerChannelFactoryInterface $logger_factory) {
+    parent::__construct($configFactory->get('social_auth_gitlab.settings'), $logger_factory);
   }
 
   /**
    * {@inheritdoc}
    */
   public function authenticate() {
-    $this->setAccessToken($this->client->getAccessToken('authorization_code',
-      ['code' => $_GET['code']]));
+    try {
+      $this->setAccessToken($this->client->getAccessToken('authorization_code',
+        ['code' => $_GET['code']]));
+    }
+    catch (IdentityProviderException $e) {
+      $this->loggerFactory->get('social_auth_gitlab')
+        ->error('There was an error during authentication. Exception: ' . $e->getMessage());
+    }
   }
 
   /**
    * {@inheritdoc}
    */
   public function getUserInfo() {
-    $this->user = $this->client->getResourceOwner($this->getAccessToken());
+    if (!$this->user) {
+      $this->user = $this->client->getResourceOwner($this->getAccessToken());
+    }
+
     return $this->user;
   }
 
@@ -57,27 +70,31 @@ class GitLabAuthManager extends OAuth2Manager {
   /**
    * {@inheritdoc}
    */
-  public function requestEndPoint($path) {
-    $url = 'https://gitlab.com/api' . $path;
+  public function requestEndPoint($method, $path, $domain = NULL, array $options = []) {
+    if (!$domain) {
+      $domain = 'https://gitlab.com/api';
+    }
 
-    $request = $this->client->getAuthenticatedRequest('GET', $url, $this->getAccessToken());
+    $url = $domain . $path;
 
-    $response = $this->client->getResponse($request);
+    $request = $this->client->getAuthenticatedRequest($method, $url, $this->getAccessToken(), $options);
 
-    return $response->getBody()->getContents();
+    try {
+      return $this->client->getParsedResponse($request);
+    }
+    catch (IdentityProviderException $e) {
+      $this->loggerFactory->get('social_auth_gitlab')
+        ->error('There was an error when requesting ' . $url . '. Exception: ' . $e->getMessage());
+    }
+
+    return NULL;
   }
 
   /**
-   * Returns the GitLab login URL where user will be redirected.
-   *
-   * @return string
-   *   Absolute GitLab login URL where user will be redirected
+   * {@inheritdoc}
    */
   public function getState() {
-    $state = $this->client->getState();
-
-    // Generate and return the URL where we should redirect the user.
-    return $state;
+    return $this->client->getState();
   }
 
 }
