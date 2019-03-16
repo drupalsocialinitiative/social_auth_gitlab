@@ -5,29 +5,7 @@
  * Install, update, and uninstall functions for Social Auth GitLab.
  */
 
-use Drupal\social_api\Utility\SocialApiImplementerInstaller;
 use Drupal\social_auth\Controller\SocialAuthController;
-
-/**
- * Implements hook_requirements().
- *
- * Checks that a compatible version of PHP League OAuth2 GitLab library is
- * available. Check installation instructions from the README.txt.
- */
-function social_auth_gitlab_requirements($phase) {
-
-  $requirements = [];
-
-  // Social API should be installed at this point in order to check library.
-  \Drupal::service('module_installer')->install(['social_api']);
-
-  if ($phase == 'install') {
-    $requirements = SocialApiImplementerInstaller::checkLibrary('social_auth_gitlab', 'Social Auth GitLab', 'omines/oauth2-gitlab', 3.0, 4.0);
-  }
-
-  return $requirements;
-
-}
 
 /**
  * Implements hook_install().
