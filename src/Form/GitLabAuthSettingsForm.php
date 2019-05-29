@@ -89,7 +89,7 @@ class GitLabAuthSettingsForm extends SocialAuthSettingsForm {
       '#description' => $this->t('Define the endpoints to be requested when user authenticates with GitLab for the first time<br>
                                   Enter each endpoint in a different line in the format <em>endpoint</em>|<em>name_of_endpoint</em>.<br>
                                   <b>For instance:</b><br>
-                                  /v4/user/keys|user_keys'),
+                                  /api/v4/user/keys|user_keys'),
     ];
 
     return parent::buildForm($form, $form_state);

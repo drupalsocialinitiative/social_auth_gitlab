@@ -12,6 +12,6 @@ function social_auth_gitlab_add_url_setting() {
   $config = \Drupal::configFactory()
     ->getEditable('social_auth_gitlab.settings');
 
-  $config->set('base_url', 'https://gitlab.com/api')
+  $config->set('base_url', 'https://gitlab.com/')
     ->save(TRUE);
 }

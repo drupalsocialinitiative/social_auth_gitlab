@@ -1,4 +1,4 @@
 client_id: ''
 client_secret: ''
 endpoints: ''
-base_url: 'https://gitlab.com/api'
+base_url: 'https://gitlab.com/'
