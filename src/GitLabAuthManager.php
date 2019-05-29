@@ -6,11 +6,19 @@ use Drupal\Core\Config\ConfigFactory;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\social_auth\AuthManager\OAuth2Manager;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Contains all the logic for GitLab OAuth2 authentication.
  */
 class GitLabAuthManager extends OAuth2Manager {
+
+  /**
+   * The request stack.
+   *
+   * @var \Symfony\Component\HttpFoundation\RequestStack
+   */
+  protected $requestStack;
 
   /**
    * Constructor.
@@ -19,9 +27,12 @@ class GitLabAuthManager extends OAuth2Manager {
    *   Used for accessing configuration object factory.
    * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
    *   The logger factory.
+   * @param \Symfony\Component\HttpFoundation\RequestStack $requestStack
+   *   The request stack.
    */
-  public function __construct(ConfigFactory $configFactory, LoggerChannelFactoryInterface $logger_factory) {
+  public function __construct(ConfigFactory $configFactory, LoggerChannelFactoryInterface $logger_factory, RequestStack $requestStack) {
     parent::__construct($configFactory->get('social_auth_gitlab.settings'), $logger_factory);
+    $this->requestStack = $requestStack;
   }
 
   /**
@@ -30,7 +41,7 @@ class GitLabAuthManager extends OAuth2Manager {
   public function authenticate() {
     try {
       $this->setAccessToken($this->client->getAccessToken('authorization_code',
-        ['code' => $_GET['code']]));
+        ['code' => $this->requestStack->getMasterRequest()->query->get('code')]));
     }
     catch (IdentityProviderException $e) {
       $this->loggerFactory->get('social_auth_gitlab')
@@ -52,9 +63,6 @@ class GitLabAuthManager extends OAuth2Manager {
   /**
    * Returns the GitLab login URL where user will be redirected.
    *
-   * @TODO: We should allow extra scopes after GitLab fixes this issue:
-   * @see https://gitlab.com/gitlab-org/gitlab-ce/issues/36203
-   *
    * @return string
    *   Absolute GitLab login URL where user will be redirected
    */
@@ -72,7 +80,7 @@ class GitLabAuthManager extends OAuth2Manager {
    */
   public function requestEndPoint($method, $path, $domain = NULL, array $options = []) {
     if (!$domain) {
-      $domain = 'https://gitlab.com/api';
+      $domain = $this->settings->get('base_url');
     }
 
     $url = $domain . $path;

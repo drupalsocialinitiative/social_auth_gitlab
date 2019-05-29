@@ -11,3 +11,6 @@ social_auth_gitlab.settings:
     endpoints:
       type: string
       label: 'API Endpoints to be requested'
+    base_url:
+      type: string
+      label: 'GitLab base URL'

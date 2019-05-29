@@ -5,7 +5,7 @@ namespace Drupal\social_auth_gitlab\Plugin\Network;
 use Drupal\Core\Url;
 use Drupal\social_api\SocialApiException;
 use Drupal\social_auth\Plugin\Network\NetworkBase;
-use Drupal\social_auth_gitlab\Settings\GitLabAuthSettings;
+use Drupal\social_auth_gitlab\Settings\GitLabAuthSettingsInterface;
 use Omines\OAuth2\Client\Provider\Gitlab;
 
 /**
@@ -30,7 +30,7 @@ class GitLabAuth extends NetworkBase implements GitLabAuthInterface {
   /**
    * Sets the underlying SDK library.
    *
-   * @return \Omines\OAuth2\Client\Provider\Gitlab|bool
+   * @return \Omines\OAuth2\Client\Provider\Gitlab|null
    *   The initialized 3rd party library instance.
    *
    * @throws SocialApiException
@@ -42,7 +42,7 @@ class GitLabAuth extends NetworkBase implements GitLabAuthInterface {
     if (!class_exists($class_name)) {
       throw new SocialApiException(sprintf('The GitLab library for PHP League OAuth2 not found. Class: %s.', $class_name));
     }
-    /* @var \Drupal\social_auth_gitlab\Settings\GitlabAuthSettings $settings */
+    /* @var \Drupal\social_auth_gitlab\Settings\GitLabAuthSettingsInterface $settings */
     $settings = $this->settings;
 
     if ($this->validateConfig($settings)) {
@@ -51,6 +51,7 @@ class GitLabAuth extends NetworkBase implements GitLabAuthInterface {
         'clientId' => $settings->getClientId(),
         'clientSecret' => $settings->getClientSecret(),
         'redirectUri' => Url::fromRoute('social_auth_gitlab.callback')->setAbsolute()->toString(),
+        'domain' => $settings->getBaseUrl(),
       ];
 
       // Proxy configuration data for outward proxy.
@@ -61,21 +62,19 @@ class GitLabAuth extends NetworkBase implements GitLabAuthInterface {
 
       return new Gitlab($league_settings);
     }
-
-    return FALSE;
   }
 
   /**
    * Checks that module is configured.
    *
-   * @param \Drupal\social_auth_gitlab\Settings\GitLabAuthSettings $settings
+   * @param \Drupal\social_auth_gitlab\Settings\GitLabAuthSettingsInterface $settings
    *   The GitLab auth settings.
    *
    * @return bool
    *   True if module is configured.
    *   False otherwise.
    */
-  protected function validateConfig(GitLabAuthSettings $settings) {
+  protected function validateConfig(GitLabAuthSettingsInterface $settings) {
     $client_id = $settings->getClientId();
     $client_secret = $settings->getClientSecret();
     if (!$client_id || !$client_secret) {

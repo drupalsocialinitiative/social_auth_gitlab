@@ -24,6 +24,13 @@ class GitLabAuthSettings extends SettingsBase implements GitLabAuthSettingsInter
   protected $clientSecret;
 
   /**
+   * The base URL.
+   *
+   * @var string
+   */
+  protected $baseUrl;
+
+  /**
    * {@inheritdoc}
    */
   public function getClientId() {
@@ -41,6 +48,16 @@ class GitLabAuthSettings extends SettingsBase implements GitLabAuthSettingsInter
       $this->clientSecret = $this->config->get('client_secret');
     }
     return $this->clientSecret;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getBaseUrl() {
+    if (!$this->baseUrl) {
+      $this->baseUrl = $this->config->get('base_url');
+    }
+    return $this->baseUrl;
   }
 
 }

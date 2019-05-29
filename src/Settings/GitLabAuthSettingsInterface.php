@@ -23,4 +23,12 @@ interface GitLabAuthSettingsInterface {
    */
   public function getClientSecret();
 
+  /**
+   * Gets the base URL.
+   *
+   * @return string
+   *   The GitLab base URL.
+   */
+  public function getBaseUrl();
+
 }
