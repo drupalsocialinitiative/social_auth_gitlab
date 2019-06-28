@@ -33,7 +33,7 @@ class GitLabAuth extends NetworkBase implements GitLabAuthInterface {
    * @return \Omines\OAuth2\Client\Provider\Gitlab|bool
    *   The initialized 3rd party library instance.
    *
-   * @throws SocialApiException
+   * @throws \Drupal\social_api\SocialApiException
    *   If the SDK library does not exist.
    */
   protected function initSdk() {
