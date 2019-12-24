@@ -37,6 +37,9 @@ INSTALLATION
    https://drupal.org/documentation/install/modules-themes/modules-8
    for further information.
 
+ * A more comprehensive installation instruction for Drupal 8 can be found at
+   https://www.drupal.org/docs/8/modules/social-api/social-api-2x/social-auth-2x/social-auth-gitlab-2x-installation
+
 
 CONFIGURATION
 -------------

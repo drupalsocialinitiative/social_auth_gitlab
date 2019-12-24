@@ -17,7 +17,7 @@ function social_auth_gitlab_help($route_name, RouteMatchInterface $route_match) 
     case 'social_auth_gitlab.settings_form':
       $output = '<h3>' . t('Configuration instructions') . '</h3>';
       $output .= '<p>';
-      $output .= t('Configuration instructions and other useful documentation can be found from <a href="@handbook-url">Social Auth GitLab Handbook</a>.', ['@handbook-url' => 'https://www.drupal.org/node/2764227']);
+      $output .= t('Configuration instructions and other useful documentation can be found from <a href="@handbook-url">Social Auth GitLab Handbook</a>.', ['@handbook-url' => 'https://www.drupal.org/docs/8/modules/social-api/social-api-2x/social-auth-2x/social-auth-gitlab-2x-installation']);
       $output .= '</p>';
       break;
 
